@@ -2,6 +2,7 @@ import {Router} from "express";
 import { AuthController } from "../controllers/authController";
 import { validateRequest } from "../middleware/authMiddleware";
 import { LoginSchema, CreateWaiterSchema } from "../schemas/validationSchemas";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 const router = Router();
 const authController = new AuthController();
@@ -14,7 +15,7 @@ router.post("/login", validateRequest(LoginSchema), (req, res, next)=>
     authController.login(req, res, next)
 );
 
-router.post("/generate-qr", (req, res, next)=> 
+router.post("/generate-qr", authMiddleware, (req, res, next)=> 
     authController.generateQR(req, res, next)
 );
 

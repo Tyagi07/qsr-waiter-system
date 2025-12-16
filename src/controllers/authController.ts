@@ -43,7 +43,15 @@ export class AuthController {
 
   async generateQR(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await authService.generateQRToken(req.user!.id);
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({
+          success: false,
+          message: "User not authenticated. Please login first.",
+          statusCode: 401
+        });
+      }
+
+      const result = await authService.generateQRToken(req.user.id);
       res.status(200).json({
         success: true,
         message: "QR token generated",
@@ -62,6 +70,15 @@ export class AuthController {
   async validateQR(req: Request, res: Response, next: NextFunction) {
     try {
       const { qrToken } = req.body;
+      
+      if (!qrToken) {
+        return res.status(400).json({
+          success: false,
+          message: "QR token is required",
+          statusCode: 400
+        });
+      }
+
       const result = await authService.validateQRToken(qrToken);
       res.status(200).json({
         success: true,
